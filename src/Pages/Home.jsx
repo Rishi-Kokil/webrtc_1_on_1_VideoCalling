@@ -1,18 +1,37 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useSocket } from "../Providers/Socket"
+import { useNavigate } from 'react-router-dom';
 
 function Homepage() {
     const [email, setEmail] = useState("");
     const [roomNumber, setRoomNumber] = useState("");
-
+    const navigate = useNavigate();
     const socket = useSocket();
-
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
         console.log(email, roomNumber);
-        socket.emit('join-room', { roomId: roomNumber, emailId: email }); // basically we are activating / starting a join-room event
+        socket.emit('join-room', { emailId: email , roomId: roomNumber }); // basically we are activating / starting a join-room event
     }, [email, roomNumber, socket]);
+
+
+    const handleJoinRoom = useCallback((data)=>{
+        const {email , id} = data;
+        console.log(data);
+        navigate(`/room/${id}`);
+    },[]);
+
+
+    useEffect(()=>{
+        socket.on('user:joined' , handleJoinRoom); // whenever a room join event comes from the backend then we call the handlejoinroom function
+        // socket.on is basically an event listener and so we need to close it before the 
+        //page is re rendered 
+        return ()=>{
+            socket.off("user:joined" , handleJoinRoom);
+        }
+
+    } , [socket ,handleJoinRoom])
+
 
 
     return (
