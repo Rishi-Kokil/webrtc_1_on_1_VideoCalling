@@ -33,7 +33,21 @@ io.on("connection", (socket) => { // on getting a connection request we will per
 
         io.to(socket.id).emit("join-room" , data); //we are sending a join room event to all sockets with socket id 
         // basically we are recreating an event and sending it back to the front end with the data
+    });
+
+    socket.on("outgoing:call" , ({to , offer})=>{
+        //we are sending offer to the other user we are sending our own socket id for him
+        // to trace us back
+        console.log("Before Making an Incoming Call " , offer);
+        io.to(to).emit('incoming:call' , {from : socket.id , offer})
+
+    });
+
+    socket.on("call:accepted" , (to , ans)=>{
+        io.to(to).emit("call:accepted" , {from : socket.id , ans})
     })
+    
+    
 })
 
 
