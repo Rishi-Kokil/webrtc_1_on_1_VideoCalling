@@ -6,6 +6,7 @@ import { Hero, Navbar } from '.';
 
 function MeetingComponent() {
     const [email, setEmail] = useState("");
+    const [createMeetEmail, setCreateMeetEmail] = useState("")
     const [roomNumber, setRoomNumber] = useState("");
     const navigate = useNavigate();
     const socket = useSocket();
@@ -13,15 +14,20 @@ function MeetingComponent() {
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
         console.log(email, roomNumber);
-        socket.emit('join-room', { emailId: email, roomId: roomNumber }); // basically we are activating / starting a join-room event
+        socket.emit('join-room', { emailId: email, roomId: roomNumber, flag: true }); // basically we are activating / starting a join-room event
     }, [email, roomNumber, socket]);
 
 
     const handleJoinRoom = useCallback((data) => {
+        // getting our email and socketid from Nodejs Server
         const { email, id } = data;
         console.log(data);
         navigate(`/room/${id}`);
     }, []);
+
+    const handleCreateMeeting = useCallback(() => {
+        socket.emit('join-room', { emailId: email, roomId: roomNumber, flag: false });
+    }, [])
 
 
     useEffect(() => {
@@ -38,10 +44,10 @@ function MeetingComponent() {
 
     return (
         <div
-            className='h-[70vh] flex justify-evenly items-center flex-wrap md:gap-0 gap-3'
+            className='h-[70vh] w-[80vw] mx-auto flex justify-evenly items-center flex-wrap md:gap-0 gap-3'
         >
             <div className='min-w-[380px] flex flex-grow flex-col gap-[50px] items-center'>
-                <h2 
+                <h2
                     className='text-xl'
                 >Join Meeting</h2>
                 <form className='flex flex-col justify-center items-center gap-[20px]' onSubmit={handleSubmit}>
@@ -72,9 +78,16 @@ function MeetingComponent() {
                 >
                     Organise a Meeting
                 </h2>
+                <input
+                    type="text"
+                    onChange={(e) => { setCreateMeetEmail(e.target.value) }}
+                    placeholder='Enter Email'
+                    className=' w-[240px] p-2 rounded-lg text-center ring-2  ring-gray-300  '
+                />
                 <button
                     className='py-3  mt-3 bg-black text-white w-[150px] rounded-xl'
-                >Create Meeting</button>
+                    onClick={handleCreateMeeting}
+                >Create</button>
             </div>
 
         </div>

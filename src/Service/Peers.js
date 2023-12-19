@@ -4,20 +4,18 @@ class PeerService {
             this.peer = new RTCPeerConnection({
                 iceServers: [
                     {
-                        urls: ['stun:stun.l.google.com:19302'],
+                        urls: [
+                            "stun:stun.l.google.com:19302",
+                            "stun:global.stun.twilio.com:3478",
+                        ],
                     },
-                ],// iceservers array of objects
-            });//this.peer
-        }
-    }
-    async setLocalDescription(ans){
-        if(this.peer){
-            await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
+                ],
+            });
         }
     }
 
-    async getAnswer(offer){
-        if(this.peer){
+    async getAnswer(offer) {
+        if (this.peer) {
             await this.peer.setRemoteDescription(offer);
             const ans = await this.peer.createAnswer();
             await this.peer.setLocalDescription(new RTCSessionDescription(ans));
@@ -25,8 +23,14 @@ class PeerService {
         }
     }
 
-    async getOffer(){
-        if(this.peer){
+    async setLocalDescription(ans) {
+        if (this.peer) {
+            await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
+        }
+    }
+
+    async getOffer() {
+        if (this.peer) {
             const offer = await this.peer.createOffer();
             await this.peer.setLocalDescription(new RTCSessionDescription(offer));
             return offer;
@@ -34,5 +38,4 @@ class PeerService {
     }
 }
 
-// returning an instance of PeerService by default so that there is no need to use new again and again
 export default new PeerService();

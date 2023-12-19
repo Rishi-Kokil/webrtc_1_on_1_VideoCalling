@@ -22,7 +22,7 @@ const Navbar = () => {
             </Link>
 
             <ul
-                className="sm:flex hidden w-full justify-center  items-center"
+                className="sm:flex hidden w-full justify-end  items-center"
             >
                 {navlinks.map((items) => (
                     <li
